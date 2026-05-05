@@ -28,6 +28,26 @@ I'm looking for an opportunity to grow as a Java developer at FPT Software — w
         warning: 'Không nói quá dài (>2 phút). Không liệt kê quá nhiều tech — chỉ nói cái MÌNH THỰC SỰ DÙNG!'
       },
       {
+        title: '🎤 Script giới thiệu BACKUP — Tiếng Việt (Dự phòng)',
+        content: `"Xin chào anh/chị, em tên là Nam. Em vừa tốt nghiệp và em rất đam mê phát triển backend với Java và Spring Boot.
+
+Trong quá trình học, em đã xây dựng một dự án tên là EchoVerse — nền tảng nghe nhạc và tương tác xã hội. Em là developer chính, phụ trách cả backend và frontend.
+
+🔹 Backend: Em sử dụng Java 17 với Spring Boot 3, Spring Security kết hợp JWT để xác thực, và PostgreSQL làm database. Em thiết kế RESTful API theo kiến trúc 3 tầng: Controller → Service → Repository.
+
+🔹 Real-time: Em implement WebSocket cho tính năng chat và Firebase Cloud Messaging cho push notification.
+
+🔹 Frontend: Em dùng React để xây dựng giao diện responsive. Tính năng đặc biệt nhất là nhận diện bài hát — người dùng có thể tìm nhạc bằng cách ngâm giai điệu.
+
+🔹 Tools: Em quản lý code bằng Git, viết API docs bằng Swagger, và test bằng Postman.
+
+Em mong muốn được phát triển sự nghiệp Java developer tại FPT Software — nơi em có thể làm việc trên các dự án enterprise thực tế, học hỏi từ các anh chị có kinh nghiệm, và xây dựng career path lâu dài.
+
+Cảm ơn anh/chị đã lắng nghe."`,
+        tip: 'Bản tiếng Việt dùng khi phỏng vấn vòng kỹ thuật (Round 2/3). Vẫn giữ cấu trúc 3M!',
+        warning: 'Nếu phỏng vấn tiếng Việt: vẫn nên xen kẽ thuật ngữ tiếng Anh (Spring Boot, JWT, REST API...) — cho thấy bạn quen với tech vocabulary.'
+      },
+      {
         title: '🎵 EchoVerse — Project Showcase',
         content: `EchoVerse Music Platform — A full-stack music streaming and social platform.`,
         table: {
