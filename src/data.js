@@ -632,12 +632,54 @@ public class UserService {
     color: '#ec4899',
     sections: [
       {
-        title: '🔗 JOIN (KINH ĐIỂN)',
-        code: `INNER JOIN  → Chỉ lấy dòng KHỚP ở CẢ 2 bảng
-LEFT JOIN   → TẤT CẢ bảng trái + khớp bảng phải (NULL nếu không khớp)
-RIGHT JOIN  → TẤT CẢ bảng phải + khớp bảng trái
-FULL JOIN   → TẤT CẢ cả 2 bảng`,
-        codeLang: 'sql'
+        title: '🔗 JOIN (KINH ĐIỂN) ⭐⭐',
+        content: `JOIN dùng để nối 2 bảng dựa trên cột chung (thường là Foreign Key).`,
+        code: `-- Bảng employees:          Bảng departments:
+-- | id | name  | dept_id |  | id | dept_name |
+-- | 1  | Nam   | 10      |  | 10 | IT        |
+-- | 2  | Linh  | 20      |  | 20 | HR        |
+-- | 3  | Minh  | NULL    |  | 30 | Finance   |
+
+-- INNER JOIN: Chỉ lấy dòng KHỚP ở CẢ 2 bảng
+SELECT e.name, d.dept_name
+FROM employees e
+INNER JOIN departments d ON e.dept_id = d.id;
+-- Kết quả: Nam-IT, Linh-HR  (Minh bị loại vì dept_id = NULL)
+
+-- LEFT JOIN: TẤT CẢ bảng trái + khớp bảng phải
+SELECT e.name, d.dept_name
+FROM employees e
+LEFT JOIN departments d ON e.dept_id = d.id;
+-- Kết quả: Nam-IT, Linh-HR, Minh-NULL  (giữ Minh!)
+
+-- RIGHT JOIN: TẤT CẢ bảng phải + khớp bảng trái
+SELECT e.name, d.dept_name
+FROM employees e
+RIGHT JOIN departments d ON e.dept_id = d.id;
+-- Kết quả: Nam-IT, Linh-HR, NULL-Finance  (giữ Finance!)
+
+-- FULL OUTER JOIN: TẤT CẢ cả 2 bảng
+-- Kết quả: Nam-IT, Linh-HR, Minh-NULL, NULL-Finance`,
+        codeLang: 'sql',
+        tip: 'Mẹo nhớ: LEFT giữ hết bảng TRÁI. RIGHT giữ hết bảng PHẢI. INNER chỉ giữ khớp.'
+      },
+      {
+        title: '📋 Thứ tự thực thi SQL ⭐',
+        content: `Thứ tự VIẾT vs thứ tự THỰC THI khác nhau!`,
+        table: {
+          headers: ['Thứ tự thực thi', 'Keyword', 'Ý nghĩa'],
+          rows: [
+            ['1️⃣', 'FROM / JOIN', 'Chọn bảng, nối bảng'],
+            ['2️⃣', 'WHERE', 'Lọc từng dòng'],
+            ['3️⃣', 'GROUP BY', 'Gom nhóm'],
+            ['4️⃣', 'HAVING', 'Lọc nhóm (aggregate)'],
+            ['5️⃣', 'SELECT', 'Chọn cột hiển thị'],
+            ['6️⃣', 'DISTINCT', 'Loại trùng'],
+            ['7️⃣', 'ORDER BY', 'Sắp xếp'],
+            ['8️⃣', 'LIMIT / OFFSET', 'Giới hạn dòng'],
+          ]
+        },
+        warning: 'WHERE chạy TRƯỚC SELECT → không thể dùng alias trong WHERE! VD: WHERE total > 5 ❌ → phải HAVING COUNT(*) > 5 ✅'
       },
       {
         title: '⚠️ LEFT JOIN + WHERE (BẪY) ⭐⭐',
@@ -744,22 +786,62 @@ JOIN departments d ON da.dept_id = d.id;`,
         tip: 'CTE dùng WITH ... AS — dễ đọc hơn subquery lồng nhau. Dùng EXISTS thay IN khi subquery lớn → nhanh hơn.'
       },
       {
-        title: '🔒 Transaction & ACID',
-        content: `ACID = 4 tính chất đảm bảo database tin cậy:
-• Atomicity: Tất cả hoặc không gì cả (all or nothing)
-• Consistency: Data luôn hợp lệ sau transaction
-• Isolation: Các transaction không ảnh hưởng nhau
-• Durability: Data persist sau khi commit`,
-        code: `-- Ví dụ: Chuyển tiền
+        title: '🔒 Transaction & ACID ⭐⭐',
+        content: `Transaction = một nhóm thao tác phải thành công HẾT hoặc thất bại HẾT.
+
+ACID = 4 tính chất đảm bảo database tin cậy:`,
+        table: {
+          headers: ['Tính chất', 'Ý nghĩa', 'Ví dụ'],
+          rows: [
+            ['Atomicity', 'All or Nothing — tất cả hoặc không gì cả', 'Chuyển tiền: trừ A + cộng B. Nếu cộng B lỗi → hoàn tác trừ A'],
+            ['Consistency', 'Data luôn hợp lệ trước/sau transaction', 'Tổng tiền trong hệ thống không đổi sau chuyển khoản'],
+            ['Isolation', 'Các transaction không ảnh hưởng nhau', 'T1 đang sửa data → T2 không thấy data chưa commit'],
+            ['Durability', 'Data persist sau khi COMMIT', 'Server crash sau COMMIT → data vẫn còn'],
+          ]
+        },
+        code: `-- Ví dụ: Chuyển 1000đ từ tài khoản A sang B
 BEGIN TRANSACTION;
 
-UPDATE accounts SET balance = balance - 1000 WHERE id = 1;  -- Trừ người gửi
-UPDATE accounts SET balance = balance + 1000 WHERE id = 2;  -- Cộng người nhận
+UPDATE accounts SET balance = balance - 1000 WHERE id = 1;  -- Trừ A
+UPDATE accounts SET balance = balance + 1000 WHERE id = 2;  -- Cộng B
 
--- Nếu 1 lệnh lỗi → ROLLBACK tất cả!
-COMMIT;  -- Hoặc ROLLBACK;`,
+-- Kiểm tra: nếu balance A < 0 → ROLLBACK
+IF (SELECT balance FROM accounts WHERE id = 1) < 0 THEN
+    ROLLBACK;  -- Hoàn tác TẤT CẢ!
+ELSE
+    COMMIT;    -- Lưu vĩnh viễn
+END IF;`,
         codeLang: 'sql',
-        warning: 'Nếu không dùng transaction, có thể xảy ra: trừ tiền A nhưng chưa cộng B → mất tiền!'
+        warning: 'Không dùng transaction → có thể trừ tiền A nhưng chưa cộng B (server crash) → MẤT TIỀN!'
+      },
+      {
+        title: '🔐 Isolation Levels (Mức cô lập)',
+        content: `Isolation Level quyết định transaction này "thấy" data của transaction khác thế nào.`,
+        table: {
+          headers: ['Level', 'Dirty Read', 'Non-Repeatable', 'Phantom Read', 'Performance'],
+          rows: [
+            ['READ UNCOMMITTED', '✅ Có thể', '✅ Có thể', '✅ Có thể', 'Nhanh nhất'],
+            ['READ COMMITTED', '❌ Không', '✅ Có thể', '✅ Có thể', 'Mặc định PostgreSQL'],
+            ['REPEATABLE READ', '❌ Không', '❌ Không', '✅ Có thể', 'Mặc định MySQL InnoDB'],
+            ['SERIALIZABLE', '❌ Không', '❌ Không', '❌ Không', 'Chậm nhất, an toàn nhất'],
+          ]
+        },
+        code: `-- Dirty Read: Đọc data chưa COMMIT của transaction khác
+-- T1: UPDATE salary = 5000 WHERE id = 1;  (chưa commit)
+-- T2: SELECT salary WHERE id = 1;  → thấy 5000 (dirty!)
+-- T1: ROLLBACK;  → salary quay về giá trị cũ → T2 đọc sai!
+
+-- Non-Repeatable Read: Đọc 2 lần ra 2 kết quả khác nhau
+-- T1: SELECT salary → 3000
+-- T2: UPDATE salary = 5000; COMMIT;
+-- T1: SELECT salary → 5000  (khác lần trước!)
+
+-- Phantom Read: Đọc 2 lần, số dòng thay đổi
+-- T1: SELECT COUNT(*) → 10 dòng
+-- T2: INSERT 1 dòng mới; COMMIT;
+-- T1: SELECT COUNT(*) → 11 dòng  (phantom!)`,
+        codeLang: 'sql',
+        tip: 'Thực tế: PostgreSQL mặc định READ COMMITTED. MySQL mặc định REPEATABLE READ. Đa số trường hợp là đủ.'
       },
       {
         title: '📐 Normalization (Chuẩn hóa)',
@@ -772,6 +854,35 @@ COMMIT;  -- Hoặc ROLLBACK;`,
           ]
         },
         answer: 'Normalization giảm redundancy, tăng data integrity. Nhưng quá nhiều bảng → nhiều JOIN → chậm. Thực tế thường dùng đến 3NF.'
+      },
+      {
+        title: '📝 Bài tập SQL thường gặp phỏng vấn',
+        code: `-- 1. Tìm nhân viên lương cao thứ 2
+SELECT DISTINCT salary FROM employees
+ORDER BY salary DESC LIMIT 1 OFFSET 1;
+-- Hoặc dùng DENSE_RANK:
+SELECT name, salary FROM (
+    SELECT name, salary, DENSE_RANK() OVER (ORDER BY salary DESC) as rk
+    FROM employees
+) sub WHERE rk = 2;
+
+-- 2. Tìm department có nhiều nhân viên nhất
+SELECT d.dept_name, COUNT(*) as total
+FROM employees e
+JOIN departments d ON e.dept_id = d.id
+GROUP BY d.dept_name
+ORDER BY total DESC LIMIT 1;
+
+-- 3. Tìm nhân viên có lương cao hơn trung bình department của họ
+SELECT e.name, e.salary, d.dept_name
+FROM employees e
+JOIN departments d ON e.dept_id = d.id
+WHERE e.salary > (
+    SELECT AVG(e2.salary) FROM employees e2
+    WHERE e2.dept_id = e.dept_id
+);`,
+        codeLang: 'sql',
+        tip: 'Các bài này HAY GẶP trong phỏng vấn FPT! Luyện viết tay trên giấy.'
       }
     ],
     qa: [
@@ -792,28 +903,102 @@ COMMIT;  -- Hoặc ROLLBACK;`,
   },
   {
     id: 'data-structure',
-    title: 'Data Structure',
+    title: 'JVM & Data Structure',
     icon: '🧠',
-    badge: 'Nhẹ',
+    badge: 'Core',
     color: '#64748b',
     sections: [
       {
         title: '📐 Cấu trúc dữ liệu cơ bản',
         table: {
-          headers: ['Cấu trúc', 'Đặc điểm', 'Ví dụ'],
+          headers: ['Cấu trúc', 'Đặc điểm', 'Ví dụ thực tế'],
           rows: [
-            ['Stack', 'LIFO (Last In First Out)', 'Undo/Redo, call stack'],
-            ['Queue', 'FIFO (First In First Out)', 'Hàng đợi, message queue'],
-            ['HashMap', 'Key-Value, O(1)', 'Cache, counting'],
+            ['Array', 'Fixed size, O(1) access by index', 'Lưu danh sách điểm cố định'],
+            ['ArrayList', 'Dynamic array, O(1) get, O(n) add đầu', 'Danh sách sản phẩm'],
+            ['LinkedList', 'DSLK đôi, O(1) add đầu, O(n) get', 'Playlist nhạc, undo/redo'],
+            ['Stack', 'LIFO (Last In First Out)', 'Call stack, undo, bracket matching'],
+            ['Queue', 'FIFO (First In First Out)', 'Hàng đợi request, message queue'],
+            ['HashMap', 'Key-Value, O(1) avg', 'Cache, counting, dictionary'],
+            ['TreeMap', 'Key sorted, O(log n)', 'Leaderboard, sorted data'],
+            ['HashSet', 'No duplicate, O(1)', 'Loại trùng, kiểm tra tồn tại'],
           ]
         }
       },
       {
-        title: '💾 JVM Memory',
-        code: `Stack Memory: Biến local, reference, method call (mỗi thread 1 stack)
-Heap Memory:  Object, Array (dùng chung tất cả thread)
-String Pool:  Nằm trong Heap, cache String literal`
+        title: '💾 JVM Memory Model',
+        content: 'JVM chia memory thành nhiều vùng, mỗi vùng có mục đích khác nhau:',
+        table: {
+          headers: ['Vùng', 'Chứa gì', 'Đặc điểm'],
+          rows: [
+            ['Stack', 'Biến local, reference, method call', 'Mỗi thread 1 stack. LIFO. Tự giải phóng khi method kết thúc'],
+            ['Heap', 'Object, Array', 'Dùng chung tất cả thread. GC quản lý'],
+            ['String Pool', 'String literal', 'Nằm trong Heap. Cache: "hello" == "hello" → true'],
+            ['Method Area', 'Class info, static fields, constant pool', 'Shared cho tất cả thread'],
+          ]
+        },
+        code: `int x = 10;                    // x nằm trong Stack
+String s1 = "hello";           // s1 (ref) Stack, "hello" String Pool
+String s2 = new String("hi");  // s2 (ref) Stack, object Heap
+User user = new User();        // user (ref) Stack, User object Heap`,
+        tip: 'Stack: nhỏ, nhanh, tự giải phóng. Heap: lớn, chậm hơn, cần GC dọn dẹp.'
+      },
+      {
+        title: '♻️ Garbage Collection (GC)',
+        content: `GC tự động dọn dẹp object không còn reference trong Heap.
+
+Không cần gọi thủ công (khác C/C++). System.gc() chỉ GỢI Ý, không đảm bảo.`,
+        table: {
+          headers: ['GC Generation', 'Mô tả'],
+          rows: [
+            ['Young Gen (Eden + Survivor)', 'Object mới tạo. Minor GC — nhanh, thường xuyên'],
+            ['Old Gen (Tenured)', 'Object sống lâu. Major GC — chậm hơn, ít hơn'],
+            ['Metaspace (Java 8+)', 'Class metadata. Thay thế PermGen cũ'],
+          ]
+        },
+        tip: 'Object không có reference → eligible for GC. Memory leak: giữ reference không cần thiết (static list, listener...).'
+      },
+      {
+        title: '🔀 Thread & Concurrency (Cơ bản)',
+        content: `Thread = luồng thực thi song song. Java hỗ trợ multi-threading native.`,
+        code: `// Cách 1: extends Thread
+class MyThread extends Thread {
+    public void run() { System.out.println("Thread running"); }
+}
+new MyThread().start();
+
+// Cách 2: implements Runnable (KHUYÊN DÙNG)
+class MyTask implements Runnable {
+    public void run() { System.out.println("Task running"); }
+}
+new Thread(new MyTask()).start();
+
+// synchronized = chỉ 1 thread vào cùng lúc
+public synchronized void withdraw(int amount) {
+    if (balance >= amount) balance -= amount;
+}`,
+        warning: 'Không synchronized → race condition: 2 thread rút tiền cùng lúc → số dư sai!'
+      },
+      {
+        title: '🔑 Design Patterns cơ bản',
+        table: {
+          headers: ['Pattern', 'Mô tả', 'Ví dụ thực tế'],
+          rows: [
+            ['Singleton', '1 instance duy nhất trong toàn app', 'Spring Bean (default scope), Database connection pool'],
+            ['Factory', 'Tạo object mà không expose logic tạo', 'LoggerFactory.getLogger()'],
+            ['Builder', 'Xây object phức tạp step-by-step', 'ResponseEntity.ok().header().body()'],
+            ['Observer', 'Notify nhiều listener khi state thay đổi', 'Event handling, message queue'],
+            ['Repository', 'Tách logic data access ra layer riêng', 'Spring Data JPA Repository'],
+          ]
+        },
+        tip: 'Phỏng vấn FPT thường hỏi Singleton! Biết cách implement + tại sao Spring Bean mặc định là Singleton.'
       }
+    ],
+    qa: [
+      { q: 'Stack vs Heap?', a: 'Stack: biến local, nhỏ, nhanh, mỗi thread 1 cái. Heap: object, lớn, GC quản lý, shared tất cả thread.' },
+      { q: 'Garbage Collection hoạt động thế nào?', a: 'GC tự dọn object không còn reference. Young Gen → Minor GC (nhanh). Old Gen → Major GC (chậm). System.gc() chỉ gợi ý.' },
+      { q: 'Memory leak trong Java?', a: 'Xảy ra khi giữ reference không cần thiết (static collection chứa object, không close stream). GC không dọn được → Heap đầy → OutOfMemoryError.' },
+      { q: 'synchronized là gì?', a: 'Lock: chỉ 1 thread vào method/block cùng lúc. Tránh race condition khi nhiều thread sửa shared data.' },
+      { q: 'Singleton pattern?', a: '1 instance duy nhất, global access. VD: private constructor + static getInstance(). Spring Bean default = singleton.' }
     ]
   },
   {
@@ -854,7 +1039,7 @@ String Pool:  Nằm trong Heap, cache String literal`
         answer: '💪 Fresher chỉ cần nắm vững basic + thái độ tốt + sẵn sàng học = PASS!'
       },
       {
-        title: '🎤 Script giới thiệu hoàn chỉnh (English)',
+        title: '🎤 Script giới thiệu — English Version',
         content: `"Hello, my name is Nam. I recently graduated and I'm very passionate about backend development with Java and Spring Boot.
 
 During my studies, I built a project called EchoVerse — a full-stack music platform. I was the main developer, handling both backend and frontend.
@@ -870,6 +1055,26 @@ What I want is to grow as a professional Java developer at FPT Software. I'm exc
 Thank you for your time."`,
         tip: 'Luyện nói 1.5-2 phút. Giọng tự tin, chậm rãi. Nắm chắc keyword: Spring Boot, PostgreSQL, WebSocket, JWT, React, layered architecture.',
         warning: 'ĐỪNG học thuộc lòng! Hiểu ý → diễn đạt tự nhiên. Họ sẽ hỏi sâu vào những gì bạn nói!'
+      },
+      {
+        title: '🎤 Script giới thiệu BACKUP — Tiếng Việt (Dự phòng)',
+        content: `"Xin chào anh/chị, em tên là Nam. Em vừa tốt nghiệp và em rất đam mê phát triển backend với Java và Spring Boot.
+
+Trong quá trình học, em đã xây dựng một dự án tên là EchoVerse — nền tảng nghe nhạc và tương tác xã hội. Em là developer chính, phụ trách cả backend và frontend.
+
+🔹 Backend: Em sử dụng Java 17 với Spring Boot 3, Spring Security kết hợp JWT để xác thực, và PostgreSQL làm database. Em thiết kế RESTful API theo kiến trúc 3 tầng: Controller → Service → Repository.
+
+🔹 Real-time: Em implement WebSocket cho tính năng chat và Firebase Cloud Messaging cho push notification.
+
+🔹 Frontend: Em dùng React để xây dựng giao diện responsive. Tính năng đặc biệt nhất là nhận diện bài hát — người dùng có thể tìm nhạc bằng cách ngâm giai điệu.
+
+🔹 Tools: Em quản lý code bằng Git, viết API docs bằng Swagger, và test bằng Postman.
+
+Em mong muốn được phát triển sự nghiệp Java developer tại FPT Software — nơi em có thể làm việc trên các dự án enterprise thực tế, học hỏi từ các anh chị có kinh nghiệm, và xây dựng career path lâu dài.
+
+Cảm ơn anh/chị đã lắng nghe."`,
+        tip: 'Bản tiếng Việt dùng khi phỏng vấn vòng kỹ thuật (Round 2/3). Vẫn giữ cấu trúc 3M!',
+        warning: 'Nếu phỏng vấn tiếng Việt: vẫn nên xen kẽ thuật ngữ tiếng Anh (Spring Boot, JWT, REST API...) — cho thấy bạn quen với tech vocabulary.'
       }
     ]
   }
