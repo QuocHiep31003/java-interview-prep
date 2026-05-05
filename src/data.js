@@ -7,29 +7,26 @@ export const modules = [
     color: '#6366f1',
     sections: [
       {
-        title: '🎤 Self Introduction — Công thức 3M',
-        content: `🔹 M1 — MÌNH LÀ AI? (Who I am)
-Hi, my name is Nam. I recently graduated and I have a strong passion for backend development, especially with Java and Spring Boot.
+        title: '🎤 Self Introduction — Full Script',
+        content: `"Hello, my name is Hiệp. I recently graduated and I'm very passionate about backend development with Java and Spring Boot.
 
-🔹 M2 — MÌNH BIẾT GÌ? (What I know)
-During my studies, I built a project called EchoVerse — a full-stack music platform where users can discover, listen to, and interact with music.
+During my studies, I built a project called EchoVerse — a full-stack music platform. I was the main developer, handling both backend and frontend.
 
-I was responsible for:
-• Backend: Spring Boot + PostgreSQL + JWT Authentication
-• Frontend: React with responsive UI
-• Real-time: WebSocket messaging & Firebase notifications
-• Special feature: Music recognition by melody and humming
+On the backend, I used Java 17 with Spring Boot 3, Spring Security with JWT authentication, and PostgreSQL as the database. For real-time features like messaging and notifications, I implemented WebSocket and Firebase Cloud Messaging.
 
-Tech stack: Java 17, Spring Boot 3, Spring Security, PostgreSQL, Firebase, WebSocket, React, Git
+On the frontend, I built the UI with React, making it responsive and user-friendly. One of the most interesting features was music recognition — users could find songs by humming or singing a melody.
 
-🔹 M3 — MÌNH MUỐN GÌ? (What I want)
-I'm looking for an opportunity to grow as a Java developer at FPT Software — where I can contribute to real enterprise projects, learn from experienced engineers, and build a long-term career in software development.`,
-        tip: '💡 Công thức 3M: Mình là ai → Mình biết gì → Mình muốn gì. Nói rõ ràng, tự tin, khoảng 1-2 phút!',
-        warning: 'Không nói quá dài (>2 phút). Không liệt kê quá nhiều tech — chỉ nói cái MÌNH THỰC SỰ DÙNG!'
+I managed the project using Git for version control, documented APIs with Swagger, and tested with Postman. I followed a layered architecture pattern — Controller, Service, Repository — keeping the code clean and maintainable.
+
+What I want is to grow as a professional Java developer at FPT Software. I'm excited about the opportunity to work on enterprise-scale projects, learn from experienced engineers, and build a long-term career here.
+
+Thank you for your time."`,
+        tip: 'Luyện nói 1.5-2 phút. Giọng tự tin, chậm rãi. Nắm chắc keyword: Spring Boot, PostgreSQL, WebSocket, JWT, React, layered architecture.',
+        warning: 'ĐỪNG học thuộc lòng! Hiểu ý → diễn đạt tự nhiên. Họ sẽ hỏi sâu vào những gì bạn nói!'
       },
       {
         title: '🎤 Script giới thiệu BACKUP — Tiếng Việt (Dự phòng)',
-        content: `"Xin chào anh/chị, em tên là Nam. Em vừa tốt nghiệp và em rất đam mê phát triển backend với Java và Spring Boot.
+        content: `"Xin chào anh/chị, em tên là Hiệp. Em vừa tốt nghiệp và em rất đam mê phát triển backend với Java và Spring Boot.
 
 Trong quá trình học, em đã xây dựng một dự án tên là EchoVerse — nền tảng nghe nhạc và tương tác xã hội. Em là developer chính, phụ trách cả backend và frontend.
 
@@ -1060,7 +1057,7 @@ public synchronized void withdraw(int amount) {
       },
       {
         title: '🎤 Script giới thiệu — English Version',
-        content: `"Hello, my name is Nam. I recently graduated and I'm very passionate about backend development with Java and Spring Boot.
+        content: `"Hello, my name is Hiệp. I recently graduated and I'm very passionate about backend development with Java and Spring Boot.
 
 During my studies, I built a project called EchoVerse — a full-stack music platform. I was the main developer, handling both backend and frontend.
 
@@ -1078,7 +1075,7 @@ Thank you for your time."`,
       },
       {
         title: '🎤 Script giới thiệu BACKUP — Tiếng Việt (Dự phòng)',
-        content: `"Xin chào anh/chị, em tên là Nam. Em vừa tốt nghiệp và em rất đam mê phát triển backend với Java và Spring Boot.
+        content: `"Xin chào anh/chị, em tên là Hiệp. Em vừa tốt nghiệp và em rất đam mê phát triển backend với Java và Spring Boot.
 
 Trong quá trình học, em đã xây dựng một dự án tên là EchoVerse — nền tảng nghe nhạc và tương tác xã hội. Em là developer chính, phụ trách cả backend và frontend.
 
